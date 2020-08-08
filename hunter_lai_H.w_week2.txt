@@ -1,0 +1,74 @@
+create database hunter_lai_Hw_week2 default character set utf8;
+
+use hunter_lai_Hw_week2;
+
+drop table if exists customer;
+create table customer(
+	customerid int not null primary key,
+	customername char(20) not null,
+	password varchar(20) not null
+);
+insert into customer values(1,'王一明','123'),(2,'王二郎','a123'),(3,'李三隨','abc123'),(4,'唐四腿','abc456');
+
+drop table if exists orders;
+create table orders(
+	orderid int not null primary key,
+	customerid int not null,
+	orderdate datetime not null,
+	foreign key (customerid) references customer(customerid)
+);
+insert into orders values(10001,1,'1997-07-31 11:11:11'),(10002,2,'1997-08-01 11:11:11'),(10003,2,'1997-08-01 22:22:22'),(10004,3,'1997-08-02 01:01:01'),
+(10005,4,'1997-08-2 12:12:12'),(10006,1,'1997-08-2 12:12:24'),(10007,4,'1997-08-2 13:13:13');
+
+drop table if exists bento_shop;
+create table bento_shop(
+	bento_shopid int not null primary key,
+	bento_address varchar(60) not null,
+	bentoshop_name varchar(20) not null
+);
+insert into bento_shop values(1,'台中市南區工學路56號','正忠排骨飯'),(2,'台中市中區成功路170號','范記金之園草袋飯'),
+(3,'台中市南區永和一街','飄香懷舊便當');
+
+drop table if exists bento;
+create table bento(
+	bento_prodid int not null primary key,
+	bento_shopid int not null,
+	bento_name char(20) not null,
+	unitprice int not null,
+	calories char(20) not null,
+	foreign key (bento_shopid) references bento_shop(bento_shopid)
+);
+insert into bento values(1,1,"排骨飯",75,'330大卡'),(2,1,"鱈魚飯",90,'550大卡'),(3,1,"爌肉飯",75,'500大卡'),(4,2,"香酥排骨草袋飯",130,'360大卡'),(5,2,"沙茶牛肉草袋飯",130,'670大卡'),
+(6,2,"香嫩雞腿草袋飯",130,'700大卡'),(7,3,"招牌車頭便當",80,'400大卡'),(8,3,"滷雞腿飯",90,'430大卡'),(9,3,"東坡肉飯",140,'800大卡');
+
+drop table if exists order_detail;
+create table order_detail(
+	orderid int not null,
+	bento_prodid int not null,
+	qty int not null,
+	foreign key (bento_prodid) references bento(bento_prodid),
+	foreign key (orderid) references orders(orderid)
+);
+insert into order_detail values(10001,7,15),(10002,1,3),(10003,5,1),(10004,4,1),(10005,4,15),(10006,8,7),(10007,9,1);
+
+drop table if exists evaluation;
+create table evaluation(
+	customerid int not null,
+	bento_shopid int not null,
+	netizen_evaluation int not null,
+	foreign key (bento_shopid) references bento_shop(bento_shopid),
+	foreign key (customerid) references customer(customerid)
+);
+insert into evaluation values(1,2,5),(3,3,1),(2,2,2),(1,2,3),(4,1,4);
+
+create index idx_cust on customer(customername);
+create index idx_prod on bento(bento_name,unitprice);
+	
+select customername,bento_name,qty,bentoshop_name
+from customer c join orders o on o.customerid = c.customerid 
+        	join order_detail od on od.orderid = o.orderid
+        	join bento b on b.bento_prodid = od.bento_prodid
+        	join bento_shop bs on bs.bento_shopid = b.bento_shopid
+
+
+
